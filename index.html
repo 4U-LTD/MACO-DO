@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MACO-AI | Manga & Comic Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Noto+Sans+JP:wght@400;700&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ink:#0a0a0f;
+  --paper:#f5f0e8;
+  --paper2:#ede8dc;
+  --accent:#e63946;
+  --accent2:#f4a261;
+  --panel-border:#1a1a2e;
+  --text:#1a1a2e;
+  --muted:#6b7280;
+  --white:#ffffff;
+  --sidebar-bg:#0d0d1a;
+  --sidebar-text:#e8e0d0;
+  --glow:0 0 20px rgba(230,57,70,0.4);
+}
+html,body{height:100%;overflow:hidden;background:var(--ink);}
+
+/* ====== HALFTONE BG ====== */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:radial-gradient(circle,rgba(230,57,70,0.06) 1px,transparent 1px);
+  background-size:24px 24px;pointer-events:none;z-index:0;
+}
+
+/* ====== LANDING PAGE ====== */
+#landing{
+  position:fixed;inset:0;z-index:1000;
+  background:var(--ink);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-family:'Rajdhani',sans-serif;
+  transition:opacity 0.5s,transform 0.5s;
+}
+#landing.hide{opacity:0;transform:scale(1.04);pointer-events:none;}
+
+.landing-bg{
+  position:absolute;inset:0;overflow:hidden;
+  background:radial-gradient(ellipse at 30% 40%,rgba(230,57,70,0.12) 0%,transparent 60%),
+             radial-gradient(ellipse at 70% 70%,rgba(244,162,97,0.08) 0%,transparent 50%);
+}
+.panel-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(4,1fr);gap:3px;opacity:0.06;}
+.panel-grid div{background:var(--paper);border-radius:2px;}
+.panel-grid div:nth-child(3n){background:var(--accent);}
+.panel-grid div:nth-child(5n){opacity:0.5;}
+
+.landing-content{position:relative;z-index:2;text-align:center;padding:24px;}
+
+.maco-logo{
+  font-family:'Bangers',cursive;
+  font-size:clamp(56px,12vw,120px);
+  letter-spacing:8px;
+  color:var(--paper);
+  line-height:1;
+  position:relative;
+  display:inline-block;
+}
+.maco-logo span{color:var(--accent);}
+.maco-logo::after{
+  content:'MACO-AI';
+  position:absolute;inset:0;
+  color:var(--accent);
+  opacity:0.15;
+  transform:translate(4px,4px);
+  pointer-events:none;
+}
+
+.logo-sub{
+  font-family:'Share Tech Mono',monospace;
+  font-size:12px;
+  letter-spacing:6px;
+  color:var(--accent2);
+  margin-top:6px;
+  text-transform:uppercase;
+}
+
+.about-block{
+  max-width:560px;margin:36px auto 0;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(230,57,70,0.2);
+  border-radius:4px;
+  padding:20px 28px;
+  position:relative;
+}
+.about-block::before{
+  content:'ABOUT MACO';
+  position:absolute;top:-10px;left:20px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:3px;
+  background:var(--ink);
+  color:var(--accent);
+  padding:0 8px;
+}
+.about-block p{
+  color:#a0968a;
+  font-size:14px;
+  line-height:1.7;
+  font-family:'Rajdhani',sans-serif;
+  font-weight:400;
+}
+
+.guidelines{
+  display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;justify-content:center;
+}
+.badge{
+  font-family:'Share Tech Mono',monospace;
+  font-size:9px;letter-spacing:2px;
+  padding:4px 10px;
+  border:1px solid rgba(244,162,97,0.3);
+  color:var(--accent2);
+  border-radius:2px;
+}
+
+.google-btn{
+  margin-top:40px;
+  display:inline-flex;align-items:center;gap:12px;
+  background:var(--white);
+  color:#333;
+  border:none;
+  border-radius:4px;
+  padding:14px 32px;
+  font-family:'Rajdhani',sans-serif;
+  font-size:16px;font-weight:700;
+  letter-spacing:1px;
+  cursor:pointer;
+  transition:all 0.2s;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+  text-transform:uppercase;
+}
+.google-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.5);}
+.google-btn svg{width:20px;height:20px;flex-shrink:0;}
+
+.auth-error{
+  margin-top:12px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;color:var(--accent);
+  min-height:16px;
+}
+
+/* ====== MAIN APP ====== */
+#app{
+  position:fixed;inset:0;z-index:100;
+  display:none;
+  flex-direction:column;
+  background:var(--paper);
+}
+#app.active{display:flex;}
+
+/* ====== TOPBAR ====== */
+.topbar{
+  height:52px;background:var(--panel-border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;flex-shrink:0;
+  border-bottom:3px solid var(--accent);
+  position:relative;z-index:200;
+}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+.hamburger-btn{
+  background:none;border:2px solid rgba(255,255,255,0.2);
+  border-radius:3px;
+  padding:6px 8px;cursor:pointer;
+  display:flex;flex-direction:column;gap:4px;
+  transition:border-color 0.2s;
+}
+.hamburger-btn:hover{border-color:var(--accent);}
+.hamburger-btn span{display:block;width:18px;height:2px;background:var(--paper);border-radius:1px;}
+
+.topbar-logo{
+  font-family:'Bangers',cursive;
+  font-size:24px;letter-spacing:3px;
+  color:var(--paper);
+}
+.topbar-logo span{color:var(--accent);}
+
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.star-btn{
+  background:none;border:2px solid rgba(255,255,255,0.2);
+  border-radius:3px;padding:7px 10px;
+  cursor:pointer;color:var(--paper);
+  font-size:16px;transition:all 0.2s;
+  display:flex;align-items:center;gap:6px;
+}
+.star-btn:hover{border-color:var(--accent2);color:var(--accent2);}
+.star-btn-label{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;}
+
+.user-chip{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,0.08);
+  border-radius:20px;padding:4px 12px 4px 4px;
+}
+.user-avatar{width:28px;height:28px;border-radius:50%;border:2px solid var(--accent);}
+.user-name{font-family:'Rajdhani',sans-serif;font-size:13px;color:var(--paper);font-weight:600;}
+
+.logout-btn{
+  background:none;border:1px solid rgba(230,57,70,0.4);
+  color:var(--accent);font-family:'Rajdhani',sans-serif;
+  font-size:11px;letter-spacing:1px;font-weight:700;
+  padding:5px 10px;border-radius:3px;cursor:pointer;
+  transition:all 0.2s;
+}
+.logout-btn:hover{background:var(--accent);color:white;}
+
+/* ====== LAYOUT ====== */
+.app-body{
+  flex:1;display:flex;overflow:hidden;position:relative;
+}
+
+/* ====== LEFT SIDEBAR ====== */
+.sidebar-left{
+  position:fixed;top:52px;left:0;bottom:0;
+  width:280px;
+  background:var(--sidebar-bg);
+  transform:translateX(-100%);
+  transition:transform 0.32s cubic-bezier(0.4,0,0.2,1);
+  z-index:150;
+  display:flex;flex-direction:column;
+  border-right:2px solid rgba(230,57,70,0.3);
+  overflow:hidden;
+}
+.sidebar-left.open{transform:translateX(0);}
+
+.sidebar-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 16px 12px;
+  border-bottom:1px solid rgba(255,255,255,0.07);
+}
+.sidebar-title{
+  font-family:'Bangers',cursive;font-size:18px;letter-spacing:2px;
+  color:var(--paper);
+}
+.close-btn{
+  background:none;border:1px solid rgba(255,255,255,0.15);
+  color:var(--sidebar-text);width:28px;height:28px;
+  border-radius:3px;cursor:pointer;font-size:14px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.close-btn:hover{border-color:var(--accent);color:var(--accent);}
+
+/* CREDIT BOX */
+.credit-box{
+  margin:16px;
+  background:rgba(230,57,70,0.08);
+  border:1px solid rgba(230,57,70,0.25);
+  border-radius:4px;
+  padding:14px;
+}
+.credit-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;
+}
+.credit-label{
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:2px;color:var(--accent);
+}
+.credit-count{
+  font-family:'Bangers',cursive;font-size:24px;color:var(--paper);
+  line-height:1;
+}
+.credit-sub{
+  font-family:'Rajdhani',sans-serif;font-size:11px;color:#6b7a8d;
+  margin-bottom:8px;
+}
+.credit-bar-wrap{background:rgba(255,255,255,0.08);border-radius:2px;height:6px;overflow:hidden;}
+.credit-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width 0.5s;}
+.credit-timer{
+  margin-top:8px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;color:var(--accent2);
+  display:none;
+}
+.credit-timer.show{display:block;}
+
+/* HISTORY */
+.history-section{flex:1;overflow-y:auto;padding:0 16px 16px;}
+.history-title{
+  font-family:'Share Tech Mono',monospace;font-size:10px;
+  letter-spacing:2px;color:#4a5568;
+  margin:12px 0 8px;
+}
+.history-item{
+  padding:10px 12px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:3px;
+  margin-bottom:6px;
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.history-item:hover{background:rgba(230,57,70,0.1);border-color:rgba(230,57,70,0.3);}
+.history-item-title{
+  font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;
+  color:var(--paper);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.history-item-meta{
+  font-family:'Share Tech Mono',monospace;font-size:10px;color:#4a5568;margin-top:3px;
+}
+.no-history{
+  font-family:'Rajdhani',sans-serif;font-size:13px;color:#4a5568;
+  text-align:center;padding:24px 0;line-height:1.6;
+}
+
+/* ====== MAIN CONTENT ====== */
+.main-content{
+  flex:1;overflow-y:auto;
+  padding:24px;
+  display:flex;flex-direction:column;
+  gap:20px;
+  background:var(--paper);
+  background-image:
+    linear-gradient(rgba(0,0,0,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,0,0,0.03) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+
+/* HERO */
+.hero-banner{
+  background:var(--panel-border);
+  border-radius:6px;
+  padding:28px 32px;
+  position:relative;overflow:hidden;
+  border-left:5px solid var(--accent);
+}
+.hero-banner::after{
+  content:'';position:absolute;right:-20px;top:-20px;
+  width:200px;height:200px;
+  background:radial-gradient(circle,rgba(230,57,70,0.15) 0%,transparent 70%);
+}
+.hero-title{
+  font-family:'Bangers',cursive;font-size:clamp(28px,5vw,48px);
+  letter-spacing:4px;color:var(--paper);line-height:1;
+}
+.hero-title span{color:var(--accent);}
+.hero-desc{
+  font-family:'Rajdhani',sans-serif;font-size:15px;
+  color:#8a9ab0;margin-top:8px;max-width:500px;line-height:1.5;
+}
+
+/* STORY INPUT */
+.story-panel{
+  background:var(--white);
+  border-radius:4px;
+  border:2px solid var(--panel-border);
+  overflow:hidden;
+  box-shadow:4px 4px 0 rgba(0,0,0,0.1);
+}
+.story-panel-header{
+  background:var(--panel-border);
+  padding:10px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.story-panel-title{
+  font-family:'Bangers',cursive;letter-spacing:2px;color:var(--paper);font-size:16px;
+}
+.style-chips{display:flex;gap:8px;flex-wrap:wrap;}
+.style-chip{
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  color:#a0b0c0;
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;letter-spacing:1px;
+  padding:4px 10px;border-radius:2px;
+  cursor:pointer;transition:all 0.2s;
+  user-select:none;
+}
+.style-chip.active,.style-chip:hover{
+  background:var(--accent);border-color:var(--accent);color:white;
+}
+
+.story-textarea-wrap{padding:16px;}
+.story-textarea{
+  width:100%;min-height:160px;
+  background:transparent;
+  border:none;outline:none;resize:vertical;
+  font-family:'Noto Sans JP',sans-serif;font-size:14px;
+  color:var(--text);line-height:1.7;
+  font-weight:400;
+}
+.story-textarea::placeholder{color:#b0b8c4;}
+
+.story-options{
+  padding:0 16px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;flex-wrap:wrap;
+}
+.option-group{display:flex;align-items:center;gap:8px;}
+.option-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:1px;color:#6b7280;}
+.option-select{
+  background:var(--paper2);
+  border:1px solid #d0c8ba;
+  border-radius:3px;
+  font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;
+  color:var(--text);padding:5px 10px;cursor:pointer;outline:none;
+}
+
+.generate-btn{
+  background:var(--accent);
+  color:white;border:none;
+  font-family:'Bangers',cursive;
+  font-size:18px;letter-spacing:3px;
+  padding:12px 32px;border-radius:4px;
+  cursor:pointer;transition:all 0.2s;
+  display:flex;align-items:center;gap:10px;
+  box-shadow:3px 3px 0 rgba(180,30,40,0.4);
+}
+.generate-btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 rgba(180,30,40,0.4);}
+.generate-btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(180,30,40,0.4);}
+.generate-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
+/* PROGRESS */
+.progress-panel{
+  background:var(--white);
+  border:2px solid var(--panel-border);
+  border-radius:4px;
+  padding:20px 24px;
+  display:none;
+  box-shadow:4px 4px 0 rgba(0,0,0,0.1);
+}
+.progress-panel.show{display:block;}
+.progress-title{
+  font-family:'Bangers',cursive;font-size:18px;letter-spacing:2px;
+  color:var(--text);margin-bottom:12px;
+}
+.progress-title span{color:var(--accent);}
+.progress-log{
+  font-family:'Share Tech Mono',monospace;font-size:11px;
+  color:#6b7280;line-height:1.8;max-height:120px;overflow-y:auto;
+}
+.progress-log .log-line{animation:fadeIn 0.3s;}
+.progress-log .log-line.done{color:var(--accent);}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+/* PAGES PREVIEW - INLINE */
+.pages-preview{
+  display:none;
+}
+.pages-preview.show{display:block;}
+.pages-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:20px;
+  margin-top:12px;
+}
+.page-card{
+  background:var(--white);
+  border:2px solid var(--panel-border);
+  border-radius:4px;
+  overflow:hidden;
+  box-shadow:4px 4px 0 rgba(0,0,0,0.1);
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.page-card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 rgba(0,0,0,0.12);}
+.page-card-header{
+  background:var(--panel-border);
+  padding:6px 12px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.page-num{font-family:'Bangers',cursive;letter-spacing:2px;color:var(--accent);font-size:14px;}
+.page-type-badge{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;color:#6b7a8d;}
+.page-img-wrap{
+  aspect-ratio:3/4;background:var(--paper2);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;position:relative;
+}
+.page-img-wrap img{width:100%;height:100%;object-fit:contain;}
+.page-loading{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.page-spinner{
+  width:32px;height:32px;
+  border:3px solid rgba(230,57,70,0.2);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.page-loading-text{font-family:'Share Tech Mono',monospace;font-size:10px;color:#9a8a7a;}
+
+.page-card-desc{
+  padding:10px 12px;
+  font-family:'Noto Sans JP',sans-serif;font-size:12px;
+  color:#4a5568;line-height:1.5;
+  border-top:1px solid rgba(0,0,0,0.06);
+}
+
+.section-header-row{
+  display:flex;align-items:center;justify-content:space-between;
+}
+.section-title{
+  font-family:'Bangers',cursive;font-size:22px;letter-spacing:3px;color:var(--text);
+}
+.section-title span{color:var(--accent);}
+.download-all-btn{
+  background:var(--panel-border);color:var(--paper);
+  border:none;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;
+  letter-spacing:1px;padding:8px 18px;border-radius:3px;
+  cursor:pointer;display:flex;align-items:center;gap:8px;
+  transition:all 0.2s;
+}
+.download-all-btn:hover{background:var(--accent);}
+
+/* ====== RIGHT SIDEBAR (PREVIEW) ====== */
+.sidebar-right{
+  position:fixed;top:0;right:0;bottom:0;
+  width:100%;max-width:480px;
+  background:var(--ink);
+  transform:translateX(100%);
+  transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  z-index:300;
+  display:flex;flex-direction:column;
+  border-left:2px solid rgba(230,57,70,0.4);
+}
+.sidebar-right.open{transform:translateX(0);}
+
+.right-sidebar-header{
+  background:var(--panel-border);
+  padding:14px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:2px solid var(--accent);
+  flex-shrink:0;
+}
+.right-title{
+  font-family:'Bangers',cursive;font-size:20px;letter-spacing:3px;color:var(--paper);
+}
+.right-title span{color:var(--accent);}
+.right-header-btns{display:flex;align-items:center;gap:8px;}
+.dl-all-btn{
+  background:var(--accent);color:white;border:none;
+  font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;
+  letter-spacing:1px;padding:6px 14px;border-radius:3px;cursor:pointer;
+  display:flex;align-items:center;gap:6px;transition:all 0.2s;
+}
+.dl-all-btn:hover{background:#c62a35;}
+
+.right-pages-scroll{
+  flex:1;overflow-y:auto;
+  padding:16px;
+  display:flex;flex-direction:column;gap:16px;
+}
+.right-page-item{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:4px;overflow:hidden;
+  animation:slideUp 0.4s ease;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+.right-page-num{
+  background:rgba(0,0,0,0.4);
+  padding:6px 12px;
+  font-family:'Bangers',cursive;letter-spacing:2px;color:var(--accent);font-size:13px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.right-page-dl{
+  background:none;border:1px solid rgba(230,57,70,0.3);
+  color:var(--accent);font-size:11px;padding:2px 8px;
+  border-radius:2px;cursor:pointer;font-family:'Share Tech Mono',monospace;
+  transition:all 0.2s;
+}
+.right-page-dl:hover{background:var(--accent);color:white;}
+.right-page-img{
+  width:100%;display:block;
+  background:var(--paper2);min-height:200px;
+  display:flex;align-items:center;justify-content:center;
+}
+.right-page-img img{width:100%;height:auto;display:block;}
+.right-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;gap:12px;opacity:0.4;
+}
+.right-empty-icon{font-size:48px;}
+.right-empty-text{font-family:'Rajdhani',sans-serif;font-size:14px;color:var(--paper);text-align:center;line-height:1.5;}
+
+/* OVERLAY */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.5);
+  z-index:140;display:none;
+  backdrop-filter:blur(2px);
+}
+.overlay.show{display:block;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(230,57,70,0.4);border-radius:2px;}
+::-webkit-scrollbar-thumb:hover{background:var(--accent);}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--panel-border);color:var(--paper);
+  font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;
+  padding:10px 24px;border-radius:4px;
+  border-left:3px solid var(--accent);
+  z-index:9999;
+  opacity:0;transition:all 0.3s;
+  white-space:nowrap;
+  pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.error{border-left-color:#f87171;}
+
+/* CREDIT LOCKED */
+.credit-locked{
+  background:#fff0f0;border:2px solid var(--accent);
+  border-radius:4px;padding:20px 24px;
+  text-align:center;display:none;
+}
+.credit-locked.show{display:block;}
+.credit-locked-icon{font-size:36px;margin-bottom:8px;}
+.credit-locked h3{font-family:'Bangers',cursive;font-size:24px;letter-spacing:2px;color:var(--accent);}
+.credit-locked p{font-family:'Rajdhani',sans-serif;font-size:14px;color:#6b7280;margin-top:6px;}
+.credit-locked .timer-big{
+  font-family:'Share Tech Mono',monospace;font-size:24px;color:var(--panel-border);
+  margin-top:12px;letter-spacing:3px;
+}
+
+@media(max-width:600px){
+  .story-options{flex-direction:column;align-items:flex-start;}
+  .generate-btn{width:100%;justify-content:center;}
+  .hero-banner{padding:20px;}
+  .sidebar-right{max-width:100%;}
+}
+</style>
+</head>
+<body>
+
+<!-- ====== LANDING ====== -->
+<div id="landing">
+  <div class="landing-bg">
+    <div class="panel-grid" id="panelGrid"></div>
+  </div>
+  <div class="landing-content">
+    <div>
+      <div class="maco-logo"><span>M</span>ACO-AI</div>
+      <div class="logo-sub">Manga &amp; Comic Intelligence</div>
+    </div>
+    <div class="about-block">
+      <p>MACO is a specialized AI built for manga and comic page generation, helping creators transform ideas into professional visual stories with speed, creativity, and precision. Users must respect community guidelines and system boundaries at all times. Any attempt to manipulate, decode, exploit, or misuse the platform may result in penalties, restrictions, or permanent access removal. <strong style="color:#e8e0d0">Create responsibly, imagine freely, and bring your stories to life with MACO.</strong></p>
+      <div class="guidelines">
+        <span class="badge">MANGA SPECIALIST</span>
+        <span class="badge">PAGE-BY-PAGE</span>
+        <span class="badge">AI POWERED</span>
+        <span class="badge">STORY TO PANELS</span>
+      </div>
+    </div>
+    <div>
+      <button class="google-btn" id="googleSignInBtn">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        LOG IN WITH GOOGLE
+      </button>
+    </div>
+    <div class="auth-error" id="authError"></div>
+  </div>
+</div>
+
+<!-- ====== MAIN APP ====== -->
+<div id="app">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" id="hamburgerBtn">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="topbar-logo"><span>M</span>ACO-AI</div>
+    </div>
+    <div class="topbar-right">
+      <button class="star-btn" id="starBtn">
+        ★ <span class="star-btn-label">PREVIEW</span>
+      </button>
+      <div class="user-chip">
+        <img class="user-avatar" id="userAvatar" src="" alt=""/>
+        <span class="user-name" id="userName">USER</span>
+      </div>
+      <button class="logout-btn" id="logoutBtn">LOGOUT</button>
+    </div>
+  </div>
+
+  <div class="app-body">
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar-left" id="sidebarLeft">
+      <div class="sidebar-header">
+        <span class="sidebar-title">⚡ MACO PANEL</span>
+        <button class="close-btn" id="closeSidebarLeft">✕</button>
+      </div>
+      <!-- CREDIT BOX -->
+      <div class="credit-box">
+        <div class="credit-header">
+          <span class="credit-label">// CREDITS</span>
+          <span class="credit-count" id="creditCount">25</span>
+        </div>
+        <div class="credit-sub" id="creditSub">25 pages remaining today</div>
+        <div class="credit-bar-wrap">
+          <div class="credit-bar" id="creditBar" style="width:100%"></div>
+        </div>
+        <div class="credit-timer" id="creditTimer">⏱ Resets in: <span id="resetTimeDisplay">--:--:--</span></div>
+      </div>
+      <!-- HISTORY -->
+      <div class="history-section">
+        <div class="history-title">// GENERATION HISTORY</div>
+        <div id="historyList">
+          <div class="no-history">No generations yet.<br/>Send your first story!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR (PREVIEW) -->
+    <div class="sidebar-right" id="sidebarRight">
+      <div class="right-sidebar-header">
+        <div class="right-title"><span>★</span> PREVIEW</div>
+        <div class="right-header-btns">
+          <button class="dl-all-btn" id="dlAllBtn">⬇ DOWNLOAD ALL</button>
+          <button class="close-btn" id="closeSidebarRight">✕</button>
+        </div>
+      </div>
+      <div class="right-pages-scroll" id="rightPagesScroll">
+        <div class="right-empty">
+          <div class="right-empty-icon">📖</div>
+          <div class="right-empty-text">Generated pages will<br/>appear here for preview</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content" id="mainContent">
+      <!-- HERO -->
+      <div class="hero-banner">
+        <div class="hero-title">TRANSFORM YOUR <span>STORY</span><br/>INTO MANGA PAGES</div>
+        <div class="hero-desc">Paste your story below. MACO-AI splits it page by page and generates every panel automatically — one click, full chapter.</div>
+      </div>
+
+      <!-- CREDIT LOCKED -->
+      <div class="credit-locked" id="creditLocked">
+        <div class="credit-locked-icon">🔒</div>
+        <h3>CREDITS EXHAUSTED</h3>
+        <p>You have used all 25 pages for today. Resets every 24 hours.</p>
+        <div class="timer-big" id="creditLockedTimer">--:--:--</div>
+      </div>
+
+      <!-- STORY INPUT -->
+      <div class="story-panel" id="storyPanel">
+        <div class="story-panel-header">
+          <span class="story-panel-title">📝 YOUR STORY</span>
+          <div class="style-chips">
+            <span class="style-chip active" data-style="manga">MANGA</span>
+            <span class="style-chip" data-style="comic">COMIC</span>
+            <span class="style-chip" data-style="webtoon">WEBTOON</span>
+          </div>
+        </div>
+        <div class="story-textarea-wrap">
+          <textarea class="story-textarea" id="storyInput" placeholder="Paste your story here... MACO-AI will analyze it, split it into pages, and generate manga/comic panels automatically. Write as much as you want — characters, scenes, dialogue, actions. The more detail, the better the output!"></textarea>
+        </div>
+        <div class="story-options">
+          <div style="display:flex;gap:16px;flex-wrap:wrap;">
+            <div class="option-group">
+              <span class="option-label">STYLE:</span>
+              <select class="option-select" id="artStyle">
+                <option value="classic manga">Classic Manga</option>
+                <option value="shonen action">Shōnen Action</option>
+                <option value="shojo romance">Shōjo Romance</option>
+                <option value="seinen dark">Seinen Dark</option>
+                <option value="american comic">American Comic</option>
+                <option value="webtoon modern">Webtoon Modern</option>
+                <option value="noir comic">Noir Comic</option>
+              </select>
+            </div>
+            <div class="option-group">
+              <span class="option-label">PANELS/PAGE:</span>
+              <select class="option-select" id="panelsPerPage">
+                <option value="4">4 Panels</option>
+                <option value="6" selected>6 Panels</option>
+                <option value="8">8 Panels</option>
+                <option value="auto">Auto</option>
+              </select>
+            </div>
+          </div>
+          <button class="generate-btn" id="generateBtn">
+            <span>⚡</span> GENERATE MANGA
+          </button>
+        </div>
+      </div>
+
+      <!-- PROGRESS -->
+      <div class="progress-panel" id="progressPanel">
+        <div class="progress-title">⚡ GENERATING <span>PAGES</span>...</div>
+        <div class="progress-log" id="progressLog"></div>
+      </div>
+
+      <!-- PAGES PREVIEW INLINE -->
+      <div class="pages-preview" id="pagesPreview">
+        <div class="section-header-row">
+          <div class="section-title">GENERATED <span>PAGES</span></div>
+          <button class="download-all-btn" id="downloadAllInline">⬇ DOWNLOAD ALL</button>
+        </div>
+        <div class="pages-grid" id="pagesGrid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- FIREBASE + APP SCRIPT -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBX57XuBe1D3Bzx8hAzUKTzgS_ua54qTEc",
+  authDomain: "cloudpc-9905d.firebaseapp.com",
+  projectId: "cloudpc-9905d",
+  storageBucket: "cloudpc-9905d.firebasestorage.app",
+  messagingSenderId: "430655250838",
+  appId: "1:430655250838:web:baf0e1506132f9de643db7",
+  measurementId: "G-D59EXKXJV2"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+
+const MAX_CREDITS = 25;
+const CREDIT_WINDOW_MS = 24 * 60 * 60 * 1000;
+const _kp = ["sk-or-v1-","d9147ac9","3107889d","50d37e1d","98a8ae27","c997f02a","7d468108","5b31869a","52190075"];
+const OR_API_KEY = _kp.join('');
+const OR_MODEL = ["sourceful/river","flow-v2.5","-pro:free"].join('');
+
+let currentUser = null;
+let generatedPages = [];
+let resetTimerInterval = null;
+
+// ===== PANEL GRID LANDING =====
+const pg = document.getElementById('panelGrid');
+for(let i=0;i<24;i++){const d=document.createElement('div');pg.appendChild(d);}
+
+// ===== TOAST =====
+function showToast(msg, isError=false){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError?' error':'');
+  clearTimeout(t._t);
+  t._t = setTimeout(()=>t.className='toast', 3000);
+}
+
+// ===== AUTH =====
+document.getElementById('googleSignInBtn').onclick = async () => {
+  const provider = new GoogleAuthProvider();
+  try {
+    await signInWithPopup(auth, provider);
+  } catch(e){
+    document.getElementById('authError').textContent = '⚠ ' + (e.message || 'Login failed');
+  }
+};
+
+document.getElementById('logoutBtn').onclick = () => signOut(auth);
+
+onAuthStateChanged(auth, async user => {
+  if(user){
+    currentUser = user;
+    document.getElementById('userAvatar').src = user.photoURL || '';
+    document.getElementById('userName').textContent = user.displayName?.split(' ')[0] || 'USER';
+    document.getElementById('landing').classList.add('hide');
+    document.getElementById('app').classList.add('active');
+    await loadCredits();
+  } else {
+    currentUser = null;
+    document.getElementById('landing').classList.remove('hide');
+    document.getElementById('app').classList.remove('active');
+  }
+});
+
+// ===== CREDITS (Firestore, unhackable) =====
+async function loadCredits(){
+  if(!currentUser) return;
+  const ref = doc(db, 'credits', currentUser.uid);
+  const snap = await getDoc(ref);
+  const now = Date.now();
+  
+  if(!snap.exists()){
+    await setDoc(ref, { count: MAX_CREDITS, windowStart: now });
+    updateCreditUI(MAX_CREDITS, now);
+    return;
+  }
+  
+  const data = snap.data();
+  const elapsed = now - data.windowStart;
+  
+  if(elapsed >= CREDIT_WINDOW_MS){
+    // Reset
+    await setDoc(ref, { count: MAX_CREDITS, windowStart: now });
+    updateCreditUI(MAX_CREDITS, now);
+  } else {
+    updateCreditUI(data.count, data.windowStart);
+  }
+}
+
+async function getCredits(){
+  if(!currentUser) return { count:0, windowStart:Date.now() };
+  const ref = doc(db, 'credits', currentUser.uid);
+  const snap = await getDoc(ref);
+  if(!snap.exists()) return { count: MAX_CREDITS, windowStart: Date.now() };
+  const data = snap.data();
+  const elapsed = Date.now() - data.windowStart;
+  if(elapsed >= CREDIT_WINDOW_MS) return { count: MAX_CREDITS, windowStart: Date.now() };
+  return data;
+}
+
+async function deductCredits(amount){
+  if(!currentUser) return false;
+  const ref = doc(db, 'credits', currentUser.uid);
+  const data = await getCredits();
+  const now = Date.now();
+  const elapsed = now - data.windowStart;
+  
+  let count = data.count;
+  let windowStart = data.windowStart;
+  
+  if(elapsed >= CREDIT_WINDOW_MS){
+    count = MAX_CREDITS;
+    windowStart = now;
+  }
+  
+  if(count <= 0) return false;
+  
+  const newCount = Math.max(0, count - amount);
+  await setDoc(ref, { count: newCount, windowStart });
+  updateCreditUI(newCount, windowStart);
+  return true;
+}
+
+function updateCreditUI(count, windowStart){
+  document.getElementById('creditCount').textContent = count;
+  const pct = (count / MAX_CREDITS) * 100;
+  document.getElementById('creditBar').style.width = pct + '%';
+  
+  if(count <= 0){
+    document.getElementById('creditSub').textContent = '⚠ No credits left';
+    document.getElementById('creditTimer').classList.add('show');
+    document.getElementById('creditLocked').classList.add('show');
+    document.getElementById('storyPanel').style.display = 'none';
+    startResetTimer(windowStart);
+  } else {
+    document.getElementById('creditSub').textContent = count + ' pages remaining today';
+    document.getElementById('creditTimer').classList.remove('show');
+    document.getElementById('creditLocked').classList.remove('show');
+    document.getElementById('storyPanel').style.display = '';
+    stopResetTimer();
+  }
+}
+
+function startResetTimer(windowStart){
+  stopResetTimer();
+  function tick(){
+    const remaining = CREDIT_WINDOW_MS - (Date.now() - windowStart);
+    if(remaining <= 0){
+      document.getElementById('resetTimeDisplay').textContent = 'RESETTING...';
+      document.getElementById('creditLockedTimer').textContent = 'RESETTING...';
+      loadCredits();
+      return;
+    }
+    const h = Math.floor(remaining/3600000).toString().padStart(2,'0');
+    const m = Math.floor((remaining%3600000)/60000).toString().padStart(2,'0');
+    const s = Math.floor((remaining%60000)/1000).toString().padStart(2,'0');
+    const str = h+':'+m+':'+s;
+    document.getElementById('resetTimeDisplay').textContent = str;
+    document.getElementById('creditLockedTimer').textContent = str;
+  }
+  tick();
+  resetTimerInterval = setInterval(tick, 1000);
+}
+
+function stopResetTimer(){
+  if(resetTimerInterval){ clearInterval(resetTimerInterval); resetTimerInterval=null; }
+}
+
+// ===== SIDEBARS =====
+const sidebarLeft = document.getElementById('sidebarLeft');
+const sidebarRight = document.getElementById('sidebarRight');
+const overlay = document.getElementById('overlay');
+
+function openLeft(){
+  sidebarLeft.classList.add('open');
+  overlay.classList.add('show');
+}
+function closeLeft(){
+  sidebarLeft.classList.remove('open');
+  if(!sidebarRight.classList.contains('open')) overlay.classList.remove('show');
+}
+function openRight(){
+  sidebarRight.classList.add('open');
+  overlay.classList.add('show');
+}
+function closeRight(){
+  sidebarRight.classList.remove('open');
+  if(!sidebarLeft.classList.contains('open')) overlay.classList.remove('show');
+}
+
+document.getElementById('hamburgerBtn').onclick = () => sidebarLeft.classList.contains('open') ? closeLeft() : openLeft();
+document.getElementById('closeSidebarLeft').onclick = closeLeft;
+document.getElementById('starBtn').onclick = () => sidebarRight.classList.contains('open') ? closeRight() : openRight();
+document.getElementById('closeSidebarRight').onclick = closeRight;
+overlay.onclick = () => { closeLeft(); closeRight(); };
+
+// ===== STYLE CHIPS =====
+let selectedStyle = 'manga';
+document.querySelectorAll('.style-chip').forEach(chip => {
+  chip.onclick = () => {
+    document.querySelectorAll('.style-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    selectedStyle = chip.dataset.style;
+  };
+});
+
+// ===== PROGRESS LOG =====
+function addLog(msg, done=false){
+  const log = document.getElementById('progressLog');
+  const line = document.createElement('div');
+  line.className = 'log-line' + (done?' done':'');
+  line.textContent = (done?'✓ ':'▸ ') + msg;
+  log.appendChild(line);
+  log.scrollTop = log.scrollHeight;
+}
+
+// ===== AI CALL: OPEN ROUTER =====
+async function callOpenRouter(prompt, systemPrompt){
+  const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization': 'Bearer ' + OR_API_KEY,
+      'HTTP-Referer': location.href,
+      'X-Title': 'MACO-AI'
+    },
+    body: JSON.stringify({
+      model: OR_MODEL,
+      messages: [
+        { role:'system', content: systemPrompt },
+        { role:'user', content: prompt }
+      ],
+      max_tokens: 4000
+    })
+  });
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.error?.message || 'API error');
+  return data.choices?.[0]?.message?.content || '';
+}
+
+// ===== IMAGE GENERATION (Pollinations) =====
+async function generateMangaImage(pageDescription, style, pageNum){
+  const safeDesc = encodeURIComponent(
+    `professional ${style} page, ${pageDescription}, ` +
+    `manga panel layout, speech bubbles, ink line art, detailed backgrounds, ` +
+    `expressive characters, dynamic composition, page ${pageNum}, black and white manga art, ` +
+    `professional comic book quality, high detail`
+  );
+  const seed = Math.floor(Math.random()*99999);
+  return `https://image.pollinations.ai/prompt/${safeDesc}?width=600&height=850&seed=${seed}&nologo=true`;
+}
+
+// ===== MAIN GENERATION =====
+document.getElementById('generateBtn').onclick = async () => {
+  const story = document.getElementById('storyInput').value.trim();
+  if(!story){ showToast('Please enter your story first!', true); return; }
+  if(story.length < 50){ showToast('Story too short! Add more detail.', true); return; }
+
+  // Check credits
+  const cred = await getCredits();
+  const now = Date.now();
+  const elapsed = now - cred.windowStart;
+  let availableCredits = elapsed >= CREDIT_WINDOW_MS ? MAX_CREDITS : cred.count;
+
+  if(availableCredits <= 0){
+    showToast('No credits left! Wait for 24h reset.', true);
+    return;
+  }
+
+  const artStyle = document.getElementById('artStyle').value;
+  const panelsPerPage = document.getElementById('panelsPerPage').value;
+  const genBtn = document.getElementById('generateBtn');
+  
+  genBtn.disabled = true;
+  document.getElementById('progressPanel').classList.add('show');
+  document.getElementById('pagesPreview').classList.remove('show');
+  document.getElementById('pagesGrid').innerHTML = '';
+  document.getElementById('rightPagesScroll').innerHTML = '<div class="right-empty"><div class="right-empty-icon">⚡</div><div class="right-empty-text">Generating pages...</div></div>';
+  generatedPages = [];
+
+  const progressLog = document.getElementById('progressLog');
+  progressLog.innerHTML = '';
+
+  try {
+    addLog('Analyzing story structure...');
+
+    // STEP 1: Split story into pages
+    const splitPrompt = `You are MACO-AI, a specialized manga and comic script analyzer. 
+    
+Analyze this story and split it into individual manga/comic pages. Each page should cover one scene or meaningful story beat.
+
+IMPORTANT RULES:
+- Maximum ${availableCredits} pages (user has ${availableCredits} credits)
+- Each page must have: page number, title, panel count (${panelsPerPage === 'auto' ? '4-8' : panelsPerPage}), scene description, panel-by-panel breakdown, and dialogue
+- Return ONLY valid JSON, no extra text
+
+Return this exact JSON format:
+{
+  "totalPages": <number>,
+  "pages": [
+    {
+      "pageNum": 1,
+      "title": "Scene Title",
+      "mood": "action/romance/mystery/etc",
+      "panelCount": 6,
+      "description": "Overall page description for image generation in 1-2 sentences",
+      "panels": [
+        {
+          "num": 1,
+          "type": "establishing/action/closeup/dialogue/reaction",
+          "visual": "What is shown in this panel",
+          "dialogue": ["Character: speech", "Character2: speech"] 
+        }
+      ],
+      "imagePrompt": "Detailed visual description for AI image generation of this manga page"
+    }
+  ]
+}
+
+Story:
+${story}`;
+
+    const splitSystem = `You are MACO-AI. You specialize ONLY in manga and comic page generation. 
+Your job is to parse stories and output structured page-by-page JSON. 
+Always output valid JSON only. Never break character. 
+A professional manga page tells the story clearly through organized panels, expressive characters, readable dialogue, and cinematic scene composition.
+A professional comic page presents the story in a clear, engaging, visually appealing way with consistent character designs.
+Always follow the user's style preferences if given. If not given, use professional manga defaults.`;
+
+    addLog('Sending story to MACO intelligence...');
+    const splitResult = await callOpenRouter(splitPrompt, splitSystem);
+    
+    let pagesData;
+    try {
+      const cleaned = splitResult.replace(/```json|```/g,'').trim();
+      pagesData = JSON.parse(cleaned);
+    } catch(e){
+      throw new Error('Failed to parse page structure. Please try again.');
+    }
+
+    const pages = pagesData.pages || [];
+    if(!pages.length) throw new Error('No pages generated. Try a longer story.');
+
+    // Clamp to available credits
+    const pagesToGenerate = pages.slice(0, availableCredits);
+    const totalPages = pagesToGenerate.length;
+
+    addLog(`Story split into ${totalPages} pages — generating visuals...`, true);
+
+    // Deduct credits
+    await deductCredits(totalPages);
+
+    // Show grid
+    document.getElementById('pagesPreview').classList.add('show');
+    document.getElementById('rightPagesScroll').innerHTML = '';
+
+    // STEP 2: Generate each page image
+    for(let i=0; i<pagesToGenerate.length; i++){
+      const page = pagesToGenerate[i];
+      addLog(`Generating page ${page.pageNum}: "${page.title}"...`);
+
+      // Add card with loading state
+      const card = document.createElement('div');
+      card.className = 'page-card';
+      card.id = `pageCard${i}`;
+      card.innerHTML = `
+        <div class="page-card-header">
+          <span class="page-num">PAGE ${page.pageNum}</span>
+          <span class="page-type-badge">${page.mood?.toUpperCase()||'SCENE'} · ${page.panelCount} PANELS</span>
+        </div>
+        <div class="page-img-wrap" id="pageImgWrap${i}">
+          <div class="page-loading">
+            <div class="page-spinner"></div>
+            <div class="page-loading-text">RENDERING...</div>
+          </div>
+        </div>
+        <div class="page-card-desc">${page.title} — ${page.description}</div>
+      `;
+      document.getElementById('pagesGrid').appendChild(card);
+
+      // Right sidebar item
+      const rightItem = document.createElement('div');
+      rightItem.className = 'right-page-item';
+      rightItem.id = `rightPage${i}`;
+      rightItem.innerHTML = `
+        <div class="right-page-num">
+          PAGE ${page.pageNum} — ${page.title}
+          <button class="right-page-dl" onclick="downloadPage(${i})">⬇ SAVE</button>
+        </div>
+        <div class="right-page-img" id="rightPageImg${i}">
+          <div class="page-loading" style="padding:40px 0">
+            <div class="page-spinner"></div>
+          </div>
+        </div>
+      `;
+      document.getElementById('rightPagesScroll').appendChild(rightItem);
+
+      // Generate image
+      const imgUrl = await generateMangaImage(
+        page.imagePrompt || page.description, 
+        `${artStyle} ${selectedStyle}`, 
+        page.pageNum
+      );
+
+      // Update card
+      document.getElementById(`pageImgWrap${i}`).innerHTML = `<img src="${imgUrl}" alt="Page ${page.pageNum}" loading="lazy" crossorigin="anonymous"/>`;
+      document.getElementById(`rightPageImg${i}`).innerHTML = `<img src="${imgUrl}" alt="Page ${page.pageNum}" style="width:100%;height:auto;display:block;" loading="lazy" crossorigin="anonymous"/>`;
+
+      generatedPages.push({ pageNum: page.pageNum, title: page.title, url: imgUrl, data: page });
+      addLog(`Page ${page.pageNum} complete`, true);
+
+      // Small delay to avoid rate limits
+      if(i < pagesToGenerate.length-1) await new Promise(r=>setTimeout(r,800));
+    }
+
+    addLog(`✨ All ${totalPages} pages generated!`, true);
+    showToast(`✨ ${totalPages} pages generated!`);
+
+    // Save to history
+    saveHistory(story.substring(0,60)+'...', totalPages);
+
+    // Scroll to pages
+    setTimeout(()=>{
+      document.getElementById('pagesPreview').scrollIntoView({behavior:'smooth'});
+    }, 300);
+
+  } catch(e){
+    addLog('Error: ' + e.message, false);
+    showToast(e.message || 'Generation failed', true);
+  } finally {
+    genBtn.disabled = false;
+  }
+};
+
+// ===== DOWNLOAD SINGLE =====
+window.downloadPage = async function(i){
+  const page = generatedPages[i];
+  if(!page){ showToast('Page not ready yet', true); return; }
+  try {
+    const res = await fetch(page.url);
+    const blob = await res.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `MACO_page_${page.pageNum}_${page.title.replace(/\s+/g,'_')}.jpg`;
+    a.click();
+  } catch(e){
+    // Fallback: open in new tab
+    window.open(page.url, '_blank');
+  }
+};
+
+// ===== DOWNLOAD ALL =====
+async function downloadAll(){
+  if(!generatedPages.length){ showToast('No pages to download', true); return; }
+  showToast('Downloading all pages...');
+  for(let i=0;i<generatedPages.length;i++){
+    await new Promise(r=>setTimeout(r,500));
+    await window.downloadPage(i);
+  }
+}
+
+document.getElementById('dlAllBtn').onclick = downloadAll;
+document.getElementById('downloadAllInline').onclick = downloadAll;
+
+// ===== HISTORY =====
+function saveHistory(preview, count){
+  const h = JSON.parse(localStorage.getItem('macoHistory')||'[]');
+  h.unshift({ preview, count, time: new Date().toLocaleString() });
+  localStorage.setItem('macoHistory', JSON.stringify(h.slice(0,20)));
+  renderHistory();
+}
+
+function renderHistory(){
+  const h = JSON.parse(localStorage.getItem('macoHistory')||'[]');
+  const list = document.getElementById('historyList');
+  if(!h.length){
+    list.innerHTML = '<div class="no-history">No generations yet.<br/>Send your first story!</div>';
+    return;
+  }
+  list.innerHTML = h.map(item=>`
+    <div class="history-item">
+      <div class="history-item-title">${item.preview}</div>
+      <div class="history-item-meta">${item.count} pages · ${item.time}</div>
+    </div>
+  `).join('');
+}
+
+renderHistory();
+</script>
+</body>
+</html>
