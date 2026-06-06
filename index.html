@@ -659,13 +659,18 @@ ${story}`;
       {role:'system', content: sysPrompt},
       {role:'user', content: userPrompt}
     ]);
+    console.log('🤖 AI raw response:', raw);
 
     // Parse JSON — strip any accidental wrapping
     let pagesData;
     try {
-      const cleaned = raw
-        .replace(/^```json\s*/,'').replace(/^```\s*/,'')
-        .replace(/\s*```$/,'').trim();
+      // Strip markdown fences and extract JSON object/array
+      let cleaned = raw.trim();
+      cleaned = cleaned.replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
+      // Find first { and last } to extract pure JSON
+      const jsonStart = cleaned.indexOf('{');
+      const jsonEnd = cleaned.lastIndexOf('}');
+      if(jsonStart !== -1 && jsonEnd !== -1) cleaned = cleaned.slice(jsonStart, jsonEnd+1);
       pagesData = JSON.parse(cleaned);
     } catch(e){
       console.error('Raw AI response:', raw);
@@ -749,7 +754,7 @@ ${story}`;
         }
 
         // Update count
-        const done = genPages.filter(p=>p.url).length;
+        const done = genPages.filter(gp=>gp.url).length;
         setCount(`${done}/${pages.length}`);
         setSub(`Loading images... ${done} of ${pages.length} done`);
       });
@@ -764,7 +769,7 @@ ${story}`;
     setSub(`Loading ${pages.length} manga images in parallel...`);
     await Promise.all(imagePromises);
 
-    const successCount = genPages.filter(p=>p.url).length;
+    const successCount = genPages.filter(gp=>gp.url).length;
     setSub(`Done! ${successCount}/${pages.length} images loaded.`);
     setCount(`✓`);
     toast(`✨ ${pages.length} pages generated!`);
@@ -827,4 +832,3 @@ renderHist();
 </script>
 </body>
 </html>
-
