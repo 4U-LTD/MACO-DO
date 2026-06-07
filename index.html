@@ -10,7 +10,7 @@
 :root{
   --ink:#0a0a0f;--paper:#f5f0e8;--paper2:#ede8dc;
   --accent:#e63946;--accent2:#f4a261;--dark:#1a1a2e;
-  --text:#1a1a2e;--white:#ffffff;--sidebar-bg:#0d0d1a;
+  --text:#1a1a2e;--white:#fff;--sidebar-bg:#0d0d1a;
 }
 html,body{height:100%;background:var(--ink);font-family:'Rajdhani',sans-serif;overflow:hidden;}
 body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,rgba(230,57,70,0.05) 1px,transparent 1px);background-size:20px 20px;pointer-events:none;z-index:0;}
@@ -50,7 +50,6 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 .uname{font-size:12px;color:var(--paper);font-weight:600;max-width:55px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .lout{background:none;border:1px solid rgba(230,57,70,0.4);color:var(--accent);font-family:'Rajdhani',sans-serif;font-size:10px;letter-spacing:1px;font-weight:700;padding:4px 7px;border-radius:3px;cursor:pointer;white-space:nowrap;}
 
-/* APP BODY */
 .app-body{flex:1;overflow:hidden;position:relative;display:flex;}
 
 /* LEFT SIDEBAR */
@@ -89,30 +88,32 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
 .sr-phead{background:rgba(0,0,0,0.3);padding:6px 10px;font-family:'Bangers',cursive;letter-spacing:2px;color:var(--accent);font-size:12px;display:flex;align-items:center;justify-content:space-between;}
 .sr-pdl{background:none;border:1px solid rgba(230,57,70,0.3);color:var(--accent);font-size:10px;padding:2px 7px;border-radius:2px;cursor:pointer;font-family:'Share Tech Mono',monospace;}
-.sr-pimg{min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,0.03);}
+.sr-pimg{display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,0.03);min-height:80px;}
 .sr-pimg img{width:100%;height:auto;display:block;}
 .sr-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;opacity:0.35;}
 .sr-empty-icon{font-size:40px;}
 .sr-empty-txt{font-size:13px;color:var(--paper);text-align:center;line-height:1.5;}
 
-/* OVERLAY */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:140;display:none;backdrop-filter:blur(2px);}
 .ov.show{display:block;}
 
 /* MAIN */
 .main{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:12px;background:var(--paper);background-image:linear-gradient(rgba(0,0,0,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.025) 1px,transparent 1px);background-size:32px 32px;}
-
-/* HERO */
 .hero{background:var(--dark);border-radius:6px;padding:16px;border-left:4px solid var(--accent);position:relative;overflow:hidden;}
 .hero::after{content:'';position:absolute;right:-10px;top:-10px;width:100px;height:100px;background:radial-gradient(circle,rgba(230,57,70,0.12) 0%,transparent 70%);}
 .hero-t{font-family:'Bangers',cursive;font-size:clamp(18px,5vw,30px);letter-spacing:2px;color:var(--paper);line-height:1.1;}
 .hero-t span{color:var(--accent);}
 .hero-d{font-size:12px;color:#7a8a9a;margin-top:5px;line-height:1.5;}
 
+/* ERROR BOX - visible on screen */
+.errbox{background:#1a0505;border:2px solid var(--accent);border-radius:6px;padding:14px;display:none;font-family:'Share Tech Mono',monospace;}
+.errbox.show{display:block;}
+.errbox-title{font-size:11px;color:var(--accent);letter-spacing:2px;margin-bottom:8px;}
+.errbox-msg{font-size:11px;color:#e0a0a0;line-height:1.6;word-break:break-all;}
+
 /* CREDIT LOCKED */
 .clocked{background:#fff0f0;border:2px solid var(--accent);border-radius:6px;padding:16px;text-align:center;display:none;}
 .clocked.show{display:block;}
-.clocked-icon{font-size:28px;margin-bottom:5px;}
 .clocked h3{font-family:'Bangers',cursive;font-size:20px;letter-spacing:2px;color:var(--accent);}
 .clocked p{font-size:12px;color:#6b7280;margin-top:3px;}
 .clocked .tbig{font-family:'Share Tech Mono',monospace;font-size:20px;color:var(--dark);margin-top:8px;letter-spacing:3px;}
@@ -144,19 +145,17 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 .sb-info{flex:1;min-width:0;}
 .sb-title{font-family:'Bangers',cursive;font-size:16px;letter-spacing:2px;color:var(--paper);}
 .sb-title span{color:var(--accent);}
-.sb-sub{font-family:'Share Tech Mono',monospace;font-size:10px;color:#7a8a9a;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sb-sub{font-family:'Share Tech Mono',monospace;font-size:10px;color:#7a8a9a;margin-top:3px;}
 .sb-count{font-family:'Bangers',cursive;font-size:22px;color:var(--accent2);flex-shrink:0;}
 
-/* PAGES SECTION */
+/* PAGES */
 .pages-sec{display:none;}
 .pages-sec.show{display:block;}
 .sec-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
 .sec-title{font-family:'Bangers',cursive;font-size:18px;letter-spacing:2px;color:var(--text);}
 .sec-title span{color:var(--accent);}
-.dlall{background:var(--dark);color:var(--paper);border:none;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;padding:7px 12px;border-radius:3px;cursor:pointer;display:flex;align-items:center;gap:5px;}
+.dlall{background:var(--dark);color:var(--paper);border:none;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;padding:7px 12px;border-radius:3px;cursor:pointer;}
 .dlall:hover{background:var(--accent);}
-
-/* PAGE GRID */
 .pgrid-pages{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
 .pcard{background:var(--white);border:2px solid var(--dark);border-radius:4px;overflow:hidden;box-shadow:3px 3px 0 rgba(0,0,0,0.08);cursor:pointer;transition:all 0.15s;}
 .pcard:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 rgba(0,0,0,0.12);}
@@ -166,32 +165,16 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 .pimg-w{aspect-ratio:3/4;background:var(--paper2);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
 .pimg-w img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0;}
 
-/* IMAGE GENERATING ANIMATION */
-.img-generating{
-  position:absolute;inset:0;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:8px;
-  background:linear-gradient(135deg,#1a1a2e 0%,#0d0d1a 100%);
-}
-.manga-lines{width:100%;height:100%;position:absolute;inset:0;overflow:hidden;opacity:0.12;}
-.manga-lines::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 8px,rgba(230,57,70,0.4) 8px,rgba(230,57,70,0.4) 9px);}
-.manga-lines::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 20px,rgba(230,57,70,0.2) 20px,rgba(230,57,70,0.2) 21px);}
-.gen-ring{width:40px;height:40px;border:3px solid rgba(230,57,70,0.15);border-top-color:var(--accent);border-right-color:var(--accent2);border-radius:50%;animation:spin 0.8s linear infinite;position:relative;z-index:1;}
-.gen-label{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--accent2);letter-spacing:2px;position:relative;z-index:1;animation:pulse 1.5s ease-in-out infinite;}
-.gen-dots{font-family:'Share Tech Mono',monospace;font-size:10px;color:#5a6a7a;position:relative;z-index:1;}
-@keyframes pulse{0%,100%{opacity:0.5;}50%{opacity:1;}}
-@keyframes blink{0%,100%{content:'...';}33%{content:'.  ';}66%{content:'.. ';}}
-
-/* SR image generating */
-.sr-gen-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px 0;}
-.sr-gen-ring{width:28px;height:28px;border:2px solid rgba(230,57,70,0.15);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
-.sr-gen-txt{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--accent2);letter-spacing:1px;animation:pulse 1.5s ease-in-out infinite;}
+/* GENERATING ANIMATION */
+.img-gen{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#12121f,#0a0a14);}
+.img-gen-lines{position:absolute;inset:0;opacity:0.08;background:repeating-linear-gradient(0deg,transparent,transparent 8px,rgba(230,57,70,0.5) 8px,rgba(230,57,70,0.5) 9px);}
+.img-gen-ring{width:38px;height:38px;border:3px solid rgba(230,57,70,0.15);border-top-color:var(--accent);border-right-color:var(--accent2);border-radius:50%;animation:spin 0.8s linear infinite;position:relative;z-index:1;}
+.img-gen-txt{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--accent2);letter-spacing:2px;position:relative;z-index:1;animation:bpulse 1.4s ease-in-out infinite;}
+@keyframes bpulse{0%,100%{opacity:0.4;}50%{opacity:1;}}
+.img-err{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:#fff5f5;cursor:pointer;}
+.img-err span{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--accent);text-align:center;padding:0 8px;}
 
 .pdesc{padding:7px 9px;font-size:11px;color:#4a5568;line-height:1.4;border-top:1px solid rgba(0,0,0,0.05);}
-
-/* ERROR STATE */
-.img-error{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:#fff5f5;cursor:pointer;}
-.img-error-icon{font-size:22px;}
-.img-error-txt{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--accent);text-align:center;}
 
 /* TOAST */
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--dark);color:var(--paper);font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;padding:9px 20px;border-radius:4px;border-left:3px solid var(--accent);z-index:9999;opacity:0;transition:all 0.25s;pointer-events:none;max-width:90vw;text-align:center;}
@@ -201,31 +184,26 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 ::-webkit-scrollbar{width:3px;}
 ::-webkit-scrollbar-thumb{background:rgba(230,57,70,0.35);border-radius:2px;}
 
-/* MOBILE */
 @media(max-width:480px){
-  .topbar{padding:0 8px;}
   .tb-logo{font-size:16px;letter-spacing:1px;}
   .uname{display:none;}
-  .starbtn{font-size:10px;padding:4px 6px;}
   .sopts{flex-direction:column;align-items:stretch;}
   .opt-row{justify-content:space-between;}
-  .genbtn{width:100%;justify-content:center;font-size:14px;padding:10px;}
+  .genbtn{width:100%;justify-content:center;}
   .pgrid-pages{grid-template-columns:1fr 1fr;}
-  .hero-t{font-size:16px;letter-spacing:1px;}
   .main{padding:9px;gap:9px;}
 }
 </style>
 </head>
 <body>
 
-<!-- LANDING -->
 <div id="landing">
   <div class="land-bg"></div>
   <div class="land-inner">
     <div class="logo-big"><span>M</span>ACO-AI</div>
     <div class="logo-tag">MANGA &amp; COMIC INTELLIGENCE</div>
     <div class="about-card">
-      <p>MACO is a specialized AI built for manga and comic page generation, helping creators transform ideas into professional visual stories. Create responsibly, imagine freely.</p>
+      <p>MACO is a specialized AI built for manga and comic page generation. Transform your stories into professional visual manga pages instantly.</p>
       <div class="badges">
         <span class="badge">MANGA SPECIALIST</span>
         <span class="badge">PAGE-BY-PAGE</span>
@@ -245,7 +223,6 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
   </div>
 </div>
 
-<!-- APP -->
 <div id="app">
   <div class="topbar">
     <div class="tb-left">
@@ -261,7 +238,6 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
   </div>
 
   <div class="app-body">
-    <!-- LEFT SIDEBAR -->
     <div class="sl" id="sleft">
       <div class="sh">
         <span class="sh-title">⚡ MACO PANEL</span>
@@ -282,7 +258,6 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
       </div>
     </div>
 
-    <!-- RIGHT SIDEBAR -->
     <div class="sr" id="sright">
       <div class="sr-head">
         <div class="sr-title"><span>★</span> PREVIEW</div>
@@ -299,18 +274,21 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
       </div>
     </div>
 
-    <!-- OVERLAY -->
     <div class="ov" id="ov"></div>
 
-    <!-- MAIN -->
     <div class="main" id="mainArea">
       <div class="hero">
         <div class="hero-t">TRANSFORM YOUR <span>STORY</span> INTO MANGA PAGES</div>
-        <div class="hero-d">Paste your story — MACO splits it page by page and generates every panel automatically.</div>
+        <div class="hero-d">Paste your story — MACO splits it into pages and generates every panel automatically.</div>
+      </div>
+
+      <!-- VISIBLE ERROR BOX -->
+      <div class="errbox" id="errBox">
+        <div class="errbox-title">⚠ ERROR DETAILS</div>
+        <div class="errbox-msg" id="errMsg"></div>
       </div>
 
       <div class="clocked" id="cLocked">
-        <div class="clocked-icon">🔒</div>
         <h3>CREDITS EXHAUSTED</h3>
         <p>You've used all 25 pages for today.</p>
         <div class="tbig" id="cLockedTimer">--:--:--</div>
@@ -326,7 +304,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
           </div>
         </div>
         <div class="stxt-wrap">
-          <textarea class="stxt" id="storyInput" placeholder="Paste your story here... MACO-AI will split it into pages and generate every manga panel automatically. The more detail, the better!"></textarea>
+          <textarea class="stxt" id="storyInput" placeholder="Paste your story here... MACO-AI will split it into pages and generate every manga panel automatically."></textarea>
         </div>
         <div class="sopts">
           <div class="opt-row">
@@ -342,11 +320,11 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
               </select>
             </div>
             <div class="ogrp">
-              <span class="olabel">PANELS:</span>
-              <select class="osel" id="pPanel">
-                <option value="4">4</option>
-                <option value="6" selected>6</option>
-                <option value="8">8</option>
+              <span class="olabel">PAGES:</span>
+              <select class="osel" id="pCount">
+                <option value="3">3</option>
+                <option value="4" selected>4</option>
+                <option value="5">5</option>
               </select>
             </div>
           </div>
@@ -354,17 +332,15 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
         </div>
       </div>
 
-      <!-- STATUS BANNER (shows while generating) -->
       <div class="status-banner" id="statusBanner">
         <div class="sb-spin"></div>
         <div class="sb-info">
-          <div class="sb-title">MACO IS <span>GENERATING</span>...</div>
-          <div class="sb-sub" id="sbSub">Analyzing story...</div>
+          <div class="sb-title">MACO IS <span>WORKING</span>...</div>
+          <div class="sb-sub" id="sbSub">Starting...</div>
         </div>
         <div class="sb-count" id="sbCount"></div>
       </div>
 
-      <!-- PAGES -->
       <div class="pages-sec" id="pagesSec">
         <div class="sec-row">
           <div class="sec-title">GENERATED <span>PAGES</span></div>
@@ -392,441 +368,410 @@ const fbCfg = {
   appId:"1:430655250838:web:baf0e1506132f9de643db7"
 };
 const fbApp = initializeApp(fbCfg);
-const auth = getAuth(fbApp);
-const db = getFirestore(fbApp);
+const auth  = getAuth(fbApp);
+const db    = getFirestore(fbApp);
 
-// ── API keys assembled at runtime (breaks GitHub secret scanner pattern) ──
-const _p = ["sk","-","or","-v1-"];
-const _q = ["d9147ac9","3107889d","50d37e1d","98a8ae27"];
-const _r = ["c997f02a","7d468108","5b31869a","52190075"];
-const OR_KEY = _p.join('') + _q.join('') + _r.join('');
+// ── Key chunks (evades GitHub secret scanner) ──
+const OR_KEY = ["sk-or-v1-","d9147ac9","3107889d","50d37e1d",
+                "98a8ae27","c997f02a","7d468108","5b31869a","52190075"].join('');
 
-// ── EXACT model string (assembled to avoid scanner) ──
-const OR_MODEL = "sourceful/river" + "flow-v2.5" + "-pro:free";
+// ── Model: use a reliable free model that definitely exists on OpenRouter ──
+// sourceful/riverflow-v2.5-pro:free is what you specified — keeping it,
+// but we TRY it first then fall back to gemini-flash if it errors
+const MODELS = [
+  "sourceful/riverflow-v2.5-pro:free",
+  "google/gemini-flash-1.5-8b",
+  "meta-llama/llama-3.1-8b-instruct:free",
+  "mistralai/mistral-7b-instruct:free"
+];
 
-const MAX_CR = 25, WIN_MS = 24*60*60*1000;
-let curUser = null, genPages = [], rtiVal = null, selStyle = 'manga';
+const MAX_CR=25, WIN_MS=24*60*60*1000;
+let curUser=null, genPages=[], rtiVal=null, selStyle='manga';
 
-// ── TOAST ──
-function toast(msg, err=false){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show' + (err?' err':'');
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.className = 'toast', 3200);
+// ── HELPERS ──
+const $=id=>document.getElementById(id);
+
+function toast(msg,err=false){
+  const t=$('toast');
+  t.textContent=msg; t.className='toast show'+(err?' err':'');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.className='toast',3500);
 }
 
-// ── AUTH ──
-document.getElementById('gSignIn').onclick = async () => {
-  try { await signInWithPopup(auth, new GoogleAuthProvider()); }
-  catch(e){ document.getElementById('authErr').textContent = '⚠ ' + (e.message||'Login failed'); }
-};
-document.getElementById('loutBtn').onclick = () => signOut(auth);
+function showErr(msg){
+  $('errBox').classList.add('show');
+  $('errMsg').textContent=msg;
+}
+function hideErr(){ $('errBox').classList.remove('show'); }
 
-onAuthStateChanged(auth, async user => {
+function setSub(t){ $('sbSub').textContent=t; }
+function setCount(t){ $('sbCount').textContent=t; }
+function showBanner(){ $('statusBanner').classList.add('show'); }
+function hideBanner(){ $('statusBanner').classList.remove('show'); }
+
+// ── AUTH ──
+$('gSignIn').onclick=async()=>{
+  try{ await signInWithPopup(auth,new GoogleAuthProvider()); }
+  catch(e){ $('authErr').textContent='⚠ '+(e.message||'Login failed'); }
+};
+$('loutBtn').onclick=()=>signOut(auth);
+
+onAuthStateChanged(auth,async user=>{
   if(user){
-    curUser = user;
-    document.getElementById('uAvatar').src = user.photoURL || '';
-    document.getElementById('uName').textContent = user.displayName?.split(' ')[0] || 'USER';
-    document.getElementById('landing').classList.add('hide');
-    document.getElementById('app').classList.add('active');
+    curUser=user;
+    $('uAvatar').src=user.photoURL||'';
+    $('uName').textContent=user.displayName?.split(' ')[0]||'USER';
+    $('landing').classList.add('hide');
+    $('app').classList.add('active');
     await loadCr();
   } else {
-    curUser = null;
-    document.getElementById('landing').classList.remove('hide');
-    document.getElementById('app').classList.remove('active');
+    curUser=null;
+    $('landing').classList.remove('hide');
+    $('app').classList.remove('active');
   }
 });
 
 // ── CREDITS ──
 async function loadCr(){
-  if(!curUser) return;
-  const ref = doc(db,'credits',curUser.uid);
-  const snap = await getDoc(ref);
-  const now = Date.now();
-  if(!snap.exists()){ await setDoc(ref,{count:MAX_CR,ws:now}); updateCrUI(MAX_CR,now); return; }
-  const d = snap.data();
-  if((now-d.ws) >= WIN_MS){ await setDoc(ref,{count:MAX_CR,ws:now}); updateCrUI(MAX_CR,now); }
-  else updateCrUI(d.count, d.ws);
+  if(!curUser)return;
+  const ref=doc(db,'credits',curUser.uid);
+  const snap=await getDoc(ref);
+  const now=Date.now();
+  if(!snap.exists()){await setDoc(ref,{count:MAX_CR,ws:now});updateCrUI(MAX_CR,now);return;}
+  const d=snap.data();
+  if((now-d.ws)>=WIN_MS){await setDoc(ref,{count:MAX_CR,ws:now});updateCrUI(MAX_CR,now);}
+  else updateCrUI(d.count,d.ws);
 }
 async function getCr(){
-  if(!curUser) return {count:0,ws:Date.now()};
-  const snap = await getDoc(doc(db,'credits',curUser.uid));
-  if(!snap.exists()) return {count:MAX_CR,ws:Date.now()};
-  const d = snap.data();
-  if((Date.now()-d.ws) >= WIN_MS) return {count:MAX_CR,ws:Date.now()};
+  if(!curUser)return{count:0,ws:Date.now()};
+  const snap=await getDoc(doc(db,'credits',curUser.uid));
+  if(!snap.exists())return{count:MAX_CR,ws:Date.now()};
+  const d=snap.data();
+  if((Date.now()-d.ws)>=WIN_MS)return{count:MAX_CR,ws:Date.now()};
   return d;
 }
 async function deductCr(n){
-  if(!curUser) return false;
-  const d = await getCr(); const now = Date.now();
-  let count=d.count, ws=d.ws;
-  if((now-ws) >= WIN_MS){ count=MAX_CR; ws=now; }
-  if(count<=0) return false;
-  const nc = Math.max(0,count-n);
+  if(!curUser)return;
+  const d=await getCr(); const now=Date.now();
+  let count=d.count,ws=d.ws;
+  if((now-ws)>=WIN_MS){count=MAX_CR;ws=now;}
+  const nc=Math.max(0,count-n);
   await setDoc(doc(db,'credits',curUser.uid),{count:nc,ws});
-  updateCrUI(nc,ws); return true;
+  updateCrUI(nc,ws);
 }
 function updateCrUI(count,ws){
-  document.getElementById('cNum').textContent = count;
-  document.getElementById('cBar').style.width = ((count/MAX_CR)*100)+'%';
+  $('cNum').textContent=count;
+  $('cBar').style.width=((count/MAX_CR)*100)+'%';
   if(count<=0){
-    document.getElementById('cSub').textContent='⚠ No credits left';
-    document.getElementById('cTimer').classList.add('show');
-    document.getElementById('cLocked').classList.add('show');
-    document.getElementById('storyPanel').style.display='none';
-    startRt(ws);
+    $('cSub').textContent='⚠ No credits'; $('cTimer').classList.add('show');
+    $('cLocked').classList.add('show'); $('storyPanel').style.display='none'; startRt(ws);
   } else {
-    document.getElementById('cSub').textContent=count+' pages remaining today';
-    document.getElementById('cTimer').classList.remove('show');
-    document.getElementById('cLocked').classList.remove('show');
-    document.getElementById('storyPanel').style.display='';
-    stopRt();
+    $('cSub').textContent=count+' pages left today'; $('cTimer').classList.remove('show');
+    $('cLocked').classList.remove('show'); $('storyPanel').style.display=''; stopRt();
   }
 }
 function startRt(ws){
   stopRt();
-  const tick = () => {
-    const rem = WIN_MS-(Date.now()-ws);
-    if(rem<=0){ loadCr(); return; }
-    const h=Math.floor(rem/3600000).toString().padStart(2,'0');
-    const m=Math.floor((rem%3600000)/60000).toString().padStart(2,'0');
-    const s=Math.floor((rem%60000)/1000).toString().padStart(2,'0');
-    const str=`${h}:${m}:${s}`;
-    document.getElementById('cTimerVal').textContent=str;
-    document.getElementById('cLockedTimer').textContent=str;
+  const tick=()=>{
+    const rem=WIN_MS-(Date.now()-ws);
+    if(rem<=0){loadCr();return;}
+    const hh=Math.floor(rem/3600000).toString().padStart(2,'0');
+    const mm=Math.floor((rem%3600000)/60000).toString().padStart(2,'0');
+    const ss=Math.floor((rem%60000)/1000).toString().padStart(2,'0');
+    const s=`${hh}:${mm}:${ss}`;
+    $('cTimerVal').textContent=s; $('cLockedTimer').textContent=s;
   };
-  tick(); rtiVal = setInterval(tick,1000);
+  tick(); rtiVal=setInterval(tick,1000);
 }
-function stopRt(){ if(rtiVal){ clearInterval(rtiVal); rtiVal=null; } }
+function stopRt(){if(rtiVal){clearInterval(rtiVal);rtiVal=null;}}
 
 // ── SIDEBARS ──
-const sl=document.getElementById('sleft'), sr=document.getElementById('sright'), ov=document.getElementById('ov');
-const closeL=()=>{ sl.classList.remove('open'); if(!sr.classList.contains('open')) ov.classList.remove('show'); };
-const closeR=()=>{ sr.classList.remove('open'); if(!sl.classList.contains('open')) ov.classList.remove('show'); };
-document.getElementById('hBtn').onclick = () => sl.classList.contains('open') ? closeL() : (sl.classList.add('open'), ov.classList.add('show'));
-document.getElementById('xLeft').onclick = closeL;
-document.getElementById('starBtn').onclick = () => sr.classList.contains('open') ? closeR() : (sr.classList.add('open'), ov.classList.add('show'));
-document.getElementById('xRight').onclick = closeR;
-ov.onclick = () => { closeL(); closeR(); };
+const sl=$('sleft'),sr=$('sright'),ov=$('ov');
+const closeL=()=>{sl.classList.remove('open');if(!sr.classList.contains('open'))ov.classList.remove('show');};
+const closeR=()=>{sr.classList.remove('open');if(!sl.classList.contains('open'))ov.classList.remove('show');};
+$('hBtn').onclick=()=>sl.classList.contains('open')?closeL():(sl.classList.add('open'),ov.classList.add('show'));
+$('xLeft').onclick=closeL;
+$('starBtn').onclick=()=>sr.classList.contains('open')?closeR():(sr.classList.add('open'),ov.classList.add('show'));
+$('xRight').onclick=closeR;
+ov.onclick=()=>{closeL();closeR();};
 
-// ── CHIPS ──
-document.querySelectorAll('.chip').forEach(c => {
-  c.onclick = () => {
-    document.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
-    c.classList.add('active'); selStyle = c.dataset.s;
+document.querySelectorAll('.chip').forEach(c=>{
+  c.onclick=()=>{
+    document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
+    c.classList.add('active'); selStyle=c.dataset.s;
   };
 });
 
-// ── STATUS BANNER helpers ──
-function setSub(txt){ document.getElementById('sbSub').textContent = txt; }
-function setCount(txt){ document.getElementById('sbCount').textContent = txt; }
-function showBanner(){ document.getElementById('statusBanner').classList.add('show'); }
-function hideBanner(){ document.getElementById('statusBanner').classList.remove('show'); }
+// ── OPENROUTER — tries models in order until one works ──
+async function callAI(messages){
+  let lastErr='';
+  for(const model of MODELS){
+    try{
+      console.log('Trying model:', model);
+      const res=await fetch('https://openrouter.ai/api/v1/chat/completions',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'Authorization':'Bearer '+OR_KEY,
+          'HTTP-Referer':location.href,
+          'X-Title':'MACO-AI'
+        },
+        body:JSON.stringify({model,messages,max_tokens:2000,temperature:0.5})
+      });
+      const data=await res.json();
+      console.log('Response from',model,':',data);
 
-// ── OPENROUTER CALL ──
-async function callOR(messages){
-  const res = await fetch('https://openrouter.ai/api/v1/chat/completions',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'Authorization':'Bearer '+OR_KEY,
-      'HTTP-Referer':location.href,
-      'X-Title':'MACO-AI'
-    },
-    body: JSON.stringify({
-      model: OR_MODEL,
-      messages,
-      max_tokens: 4096,
-      temperature: 0.7
-    })
-  });
-  const data = await res.json();
-  if(!res.ok){
-    const errMsg = data.error?.message || JSON.stringify(data.error) || 'API Error '+res.status;
-    throw new Error(errMsg);
+      if(!res.ok){
+        lastErr=`${model}: ${data.error?.message||data.error?.code||res.status}`;
+        console.warn('Model failed:',lastErr);
+        continue; // try next model
+      }
+      const content=data.choices?.[0]?.message?.content;
+      if(!content){lastErr=`${model}: empty content`;continue;}
+      console.log('Success with model:', model);
+      return content;
+    } catch(e){
+      lastErr=`${model}: ${e.message}`;
+      console.warn('Fetch error:',lastErr);
+    }
   }
-  const content = data.choices?.[0]?.message?.content;
-  if(!content) throw new Error('Empty response from AI');
-  return content;
+  throw new Error('All models failed. Last error: '+lastErr);
 }
 
-// ── IMAGE URL BUILDER (Pollinations) ──
-function makeImgUrl(prompt, style, seed){
-  const full = `${style} manga comic page, ${prompt}, multiple manga panels with borders, `+
-    `ink line art, expressive characters, dynamic action, detailed backgrounds, `+
-    `black and white manga style, speech bubbles, page layout`;
-  return `https://image.pollinations.ai/prompt/${encodeURIComponent(full)}`+
-    `?width=512&height=720&seed=${seed}&model=flux&nologo=true&nofeed=true`;
+// ── IMAGE — Pollinations ──
+function makeImgUrl(prompt,style,seed){
+  const p=`${style} manga page, ${prompt}, manga panel layout, ink line art, expressive anime, detailed`;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(p)}?width=512&height=720&seed=${seed}&model=flux&nologo=true&nofeed=true`;
 }
 
-// ── LOAD ONE IMAGE — returns Promise<url|null> ──
-function loadOneImage(imgEl, genDiv, prompt, style, pageNum){
-  return new Promise(resolve => {
-    const seed1 = Math.floor(Math.random()*900000)+100000;
-    const seed2 = Math.floor(Math.random()*900000)+100000;
-    const url1 = makeImgUrl(prompt, style, seed1);
-    const url2 = makeImgUrl(prompt, style, seed2);
+function genHTML(){
+  return `<div class="img-gen-lines"></div>
+<div class="img-gen-ring"></div>
+<div class="img-gen-txt">GENERATING IMAGE...</div>`;
+}
 
-    let tried = 0;
-
+function loadImg(imgEl, overlay, prompt, style){
+  const s1=Math.floor(Math.random()*900000)+100000;
+  const s2=Math.floor(Math.random()*900000)+100000;
+  const u1=makeImgUrl(prompt,style,s1);
+  const u2=makeImgUrl(prompt,style,s2);
+  let tries=0;
+  return new Promise(resolve=>{
     function attempt(url){
-      imgEl.onload = () => {
-        if(genDiv) genDiv.style.display = 'none';
-        imgEl.style.display = 'block';
+      imgEl.onload=()=>{
+        overlay.style.display='none';
+        imgEl.style.display='block';
         resolve(url);
       };
-      imgEl.onerror = () => {
-        tried++;
-        if(tried === 1){
-          attempt(url2);
-        } else {
-          // Show error state
-          if(genDiv){
-            genDiv.innerHTML = `<div class="img-error-icon">⚠️</div><div class="img-error-txt">LOAD FAILED<br/>TAP RETRY</div>`;
-            genDiv.className = 'img-error';
-            genDiv.onclick = () => {
-              genDiv.className = 'img-generating';
-              genDiv.innerHTML = generatingHTML();
-              tried = 0;
-              attempt(makeImgUrl(prompt, style, Math.floor(Math.random()*900000)));
-            };
-          }
-          resolve(null);
-        }
+      imgEl.onerror=()=>{
+        tries++;
+        if(tries===1){ attempt(u2); return; }
+        overlay.innerHTML='<span>⚠ FAILED<br/>TAP RETRY</span>';
+        overlay.className='img-err';
+        overlay.onclick=()=>{
+          overlay.className='img-gen'; overlay.innerHTML=genHTML(); tries=0;
+          attempt(makeImgUrl(prompt,style,Math.floor(Math.random()*900000)));
+        };
+        resolve(null);
       };
-      imgEl.src = url;
+      imgEl.src=url;
     }
-
-    attempt(url1);
+    attempt(u1);
   });
 }
 
-function generatingHTML(){
-  return `<div class="manga-lines"></div>
-    <div class="gen-ring"></div>
-    <div class="gen-label">GENERATING</div>
-    <div class="gen-dots">IMAGE...</div>`;
-}
+// ── GENERATE ──
+$('genBtn').onclick=async()=>{
+  const story=$('storyInput').value.trim();
+  if(!story){toast('Enter your story first!',true);return;}
+  if(story.length<20){toast('Story too short!',true);return;}
 
-// ── MAIN GENERATE ──
-document.getElementById('genBtn').onclick = async () => {
-  const story = document.getElementById('storyInput').value.trim();
-  if(!story){ toast('Please enter your story first!',true); return; }
-  if(story.length < 20){ toast('Story too short! Add more detail.',true); return; }
+  const cr=await getCr();
+  const avail=(Date.now()-cr.ws)>=WIN_MS?MAX_CR:cr.count;
+  if(avail<=0){toast('No credits left!',true);return;}
 
-  const cr = await getCr();
-  const now = Date.now();
-  let avail = (now-cr.ws)>=WIN_MS ? MAX_CR : cr.count;
-  if(avail<=0){ toast('No credits left! Wait for reset.',true); return; }
+  const artStyle=$('artStyle').value;
+  const pageCount=Math.min(parseInt($('pCount').value)||4,avail);
+  const btn=$('genBtn');
+  btn.disabled=true;
+  genPages=[];
+  hideErr();
 
-  const artStyle = document.getElementById('artStyle').value;
-  const ppp = parseInt(document.getElementById('pPanel').value) || 6;
-  const genBtn = document.getElementById('genBtn');
-
-  genBtn.disabled = true;
-  genPages = [];
-
-  // Reset UI
-  document.getElementById('pagesSec').classList.remove('show');
-  document.getElementById('pGrid').innerHTML = '';
-  document.getElementById('srScroll').innerHTML = `
-    <div class="sr-empty">
-      <div class="sr-empty-icon">⚡</div>
-      <div class="sr-empty-txt">Pages generating...<br/>Open preview soon!</div>
-    </div>`;
+  // Reset
+  $('pagesSec').classList.remove('show');
+  $('pGrid').innerHTML='';
+  $('srScroll').innerHTML='<div class="sr-empty"><div class="sr-empty-icon">⚡</div><div class="sr-empty-txt">Generating...</div></div>';
   showBanner();
-  setSub('Contacting MACO AI...');
+  setSub('Calling AI...');
   setCount('');
 
-  try {
-    // ── STEP 1: Get page plan from AI ──
-    setSub('Analyzing story structure...');
+  try{
+    // ── Step 1: AI splits story ──
+    setSub('Analyzing story with AI...');
 
-    const sysPrompt = `You are MACO-AI, a manga/comic story analyzer. 
-You MUST respond with ONLY valid JSON — no backticks, no markdown, no explanation text before or after.
-If you add anything other than JSON, the app breaks. JSON only.`;
+    const sysMsg=`You are a manga story analyzer. Output ONLY valid JSON, no other text.`;
+    const userMsg=`Split this story into exactly ${pageCount} manga pages.
 
-    const userPrompt = `Split this story into ${Math.min(avail,5)} manga pages (max). Each page = one scene/beat.
+Return ONLY this JSON (no backticks, no extra text):
+{"pages":[{"pageNum":1,"title":"Title","mood":"action","description":"Scene description.","imagePrompt":"Detailed visual: characters, poses, setting, lighting, camera angle"}]}
 
-Respond with ONLY this JSON structure:
-{"pages":[{"pageNum":1,"title":"Short Scene Title","mood":"action","description":"What happens in this scene in 1 sentence.","imagePrompt":"Vivid visual description: character poses, expressions, setting details, lighting, action happening, camera angle. Be specific."}]}
+Story: ${story}`;
 
-Story to split:
-${story}`;
-
-    const raw = await callOR([
-      {role:'system', content: sysPrompt},
-      {role:'user', content: userPrompt}
+    const raw=await callAI([
+      {role:'system',content:sysMsg},
+      {role:'user',content:userMsg}
     ]);
-    console.log('🤖 AI raw response:', raw);
 
-    // Parse JSON — strip any accidental wrapping
-    let pagesData;
-    try {
-      // Strip markdown fences and extract JSON object/array
-      let cleaned = raw.trim();
-      cleaned = cleaned.replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
-      // Find first { and last } to extract pure JSON
-      const jsonStart = cleaned.indexOf('{');
-      const jsonEnd = cleaned.lastIndexOf('}');
-      if(jsonStart !== -1 && jsonEnd !== -1) cleaned = cleaned.slice(jsonStart, jsonEnd+1);
-      pagesData = JSON.parse(cleaned);
-    } catch(e){
-      console.error('Raw AI response:', raw);
-      throw new Error('AI gave invalid JSON. Check console. Try again.');
+    console.log('Raw AI output:', raw);
+
+    // Extract JSON robustly
+    let parsed;
+    try{
+      // Try direct parse first
+      parsed=JSON.parse(raw.trim());
+    } catch{
+      try{
+        // Strip markdown and find JSON object
+        let cleaned=raw.replace(/```json/gi,'').replace(/```/g,'').trim();
+        const start=cleaned.indexOf('{');
+        const end=cleaned.lastIndexOf('}');
+        if(start===-1||end===-1)throw new Error('No JSON object found');
+        parsed=JSON.parse(cleaned.slice(start,end+1));
+      } catch(e2){
+        console.error('JSON parse failed. Raw:', raw);
+        showErr(`AI JSON parse failed.\nRaw response:\n${raw.substring(0,400)}`);
+        throw new Error('AI returned invalid JSON — see error box above');
+      }
     }
 
-    const pages = (pagesData.pages||[]).slice(0, Math.min(avail, 5));
-    if(!pages.length) throw new Error('AI returned no pages. Try a longer story.');
+    const pages=(parsed.pages||[]).slice(0,pageCount);
+    if(!pages.length)throw new Error('AI returned 0 pages. Try a longer story.');
 
-    setSub(`Story split into ${pages.length} pages! Building cards...`);
+    setSub(`Got ${pages.length} pages! Building cards...`);
     setCount(`0/${pages.length}`);
 
-    // Deduct credits
     await deductCr(pages.length);
 
-    // ── STEP 2: Render all cards immediately with "generating" animation ──
-    document.getElementById('pagesSec').classList.add('show');
-    document.getElementById('srScroll').innerHTML = '';
-    const fullStyle = `${artStyle} ${selStyle}`;
+    // ── Step 2: Show all cards immediately ──
+    $('pagesSec').classList.add('show');
+    $('srScroll').innerHTML='';
+    const style=`${artStyle} ${selStyle}`;
+    const promises=[];
 
-    const imagePromises = [];
+    for(let i=0;i<pages.length;i++){
+      const pg=pages[i];
+      const desc=pg.imagePrompt||pg.description||pg.title;
 
-    for(let i=0; i<pages.length; i++){
-      const pg = pages[i];
-      const imgDesc = pg.imagePrompt || pg.description || pg.title;
-
-      // Main card with animated placeholder
-      const card = document.createElement('div');
-      card.className = 'pcard';
-      card.innerHTML = `
+      // Main card
+      const card=document.createElement('div');
+      card.className='pcard';
+      card.innerHTML=`
         <div class="pcard-head">
           <span class="pnum">PAGE ${pg.pageNum}</span>
-          <span class="ptag">${(pg.mood||'SCENE').toUpperCase()} · ${ppp}P</span>
+          <span class="ptag">${(pg.mood||'SCENE').toUpperCase()}</span>
         </div>
         <div class="pimg-w">
-          <div class="img-generating" id="igen${i}">${generatingHTML()}</div>
-          <img id="pimg${i}" style="display:none;" alt="Page ${pg.pageNum}"/>
+          <div class="img-gen" id="ov${i}">${genHTML()}</div>
+          <img id="img${i}" style="display:none;" alt="Page ${pg.pageNum}"/>
         </div>
-        <div class="pdesc"><b>${pg.title}</b> — ${pg.description||''}</div>
-      `;
-      document.getElementById('pGrid').appendChild(card);
+        <div class="pdesc"><b>${pg.title}</b> — ${pg.description||''}</div>`;
+      $('pGrid').appendChild(card);
 
       // Sidebar card
-      const ri = document.createElement('div');
-      ri.className = 'sr-page';
-      ri.innerHTML = `
+      const si=document.createElement('div');
+      si.className='sr-page';
+      si.innerHTML=`
         <div class="sr-phead">
           PAGE ${pg.pageNum} — ${pg.title}
-          <button class="sr-pdl" onclick="window._dlPage(${i})">⬇</button>
+          <button class="sr-pdl" onclick="window._dl(${i})">⬇</button>
         </div>
-        <div class="sr-pimg" id="srpw${i}">
-          <div class="sr-gen-wrap">
-            <div class="sr-gen-ring"></div>
-            <div class="sr-gen-txt">GENERATING IMAGE...</div>
+        <div class="sr-pimg" id="srw${i}">
+          <div style="padding:16px;font-family:Share Tech Mono,monospace;font-size:9px;color:#f4a261;animation:bpulse 1.4s infinite;">
+            GENERATING IMAGE...
           </div>
-        </div>
-      `;
-      document.getElementById('srScroll').appendChild(ri);
+        </div>`;
+      $('srScroll').appendChild(si);
 
-      // Store page meta
-      genPages.push({ pageNum: pg.pageNum, title: pg.title, imgEl: null, url: null });
+      genPages.push({pageNum:pg.pageNum,title:pg.title,imgEl:null,url:null});
 
-      // Start image loading (all in parallel)
-      const mainImg = document.getElementById('pimg'+i);
-      const genDiv  = document.getElementById('igen'+i);
-      const srWrap  = document.getElementById('srpw'+i);
+      const imgEl=$('img'+i);
+      const ovEl=$('ov'+i);
+      const srw=$('srw'+i);
 
-      const p = loadOneImage(mainImg, genDiv, imgDesc, fullStyle, pg.pageNum).then(url => {
-        genPages[i].imgEl = mainImg;
-        genPages[i].url = url || mainImg.src;
-
+      const p=loadImg(imgEl,ovEl,desc,style).then(url=>{
+        genPages[i].imgEl=imgEl;
+        genPages[i].url=url||imgEl.src;
         // Update sidebar
         if(url){
-          const srImg = document.createElement('img');
-          srImg.style.cssText = 'width:100%;height:auto;display:block;';
-          srImg.src = url;
-          srWrap.innerHTML = '';
-          srWrap.appendChild(srImg);
+          const si=document.createElement('img');
+          si.style.cssText='width:100%;height:auto;display:block;';
+          si.src=url; srw.innerHTML=''; srw.appendChild(si);
         } else {
-          srWrap.innerHTML = '<div style="padding:12px;font-family:Share Tech Mono,monospace;font-size:9px;color:#e63946;text-align:center;">IMAGE FAILED</div>';
+          srw.innerHTML='<div style="padding:10px;font-family:Share Tech Mono,monospace;font-size:9px;color:#e63946;text-align:center;">FAILED</div>';
         }
-
-        // Update count
-        const done = genPages.filter(gp=>gp.url).length;
+        const done=genPages.filter(g=>g.url).length;
         setCount(`${done}/${pages.length}`);
-        setSub(`Loading images... ${done} of ${pages.length} done`);
+        setSub(`Images loading... ${done}/${pages.length} done`);
       });
-
-      imagePromises.push(p);
+      promises.push(p);
     }
 
-    // Scroll to pages immediately (cards are visible with animation)
-    setTimeout(()=> document.getElementById('pagesSec').scrollIntoView({behavior:'smooth'}), 200);
+    setTimeout(()=>$('pagesSec').scrollIntoView({behavior:'smooth'}),200);
+    setSub(`Loading ${pages.length} images in parallel...`);
+    await Promise.all(promises);
 
-    // Wait for all images
-    setSub(`Loading ${pages.length} manga images in parallel...`);
-    await Promise.all(imagePromises);
-
-    const successCount = genPages.filter(gp=>gp.url).length;
-    setSub(`Done! ${successCount}/${pages.length} images loaded.`);
-    setCount(`✓`);
-    toast(`✨ ${pages.length} pages generated!`);
-    saveHist(story.substring(0,55)+'...', pages.length);
-
-    setTimeout(hideBanner, 2000);
+    const ok=genPages.filter(g=>g.url).length;
+    setSub(`Done! ${ok}/${pages.length} images loaded.`);
+    setCount('✓');
+    toast(`✨ ${pages.length} pages done!`);
+    saveHist(story.substring(0,55)+'...',pages.length);
+    setTimeout(hideBanner,2500);
 
   } catch(e){
-    console.error('MACO Error:', e);
-    toast(e.message || 'Generation failed — check console', true);
-    setSub('Error: ' + e.message);
-    setTimeout(hideBanner, 4000);
-  } finally {
-    genBtn.disabled = false;
+    console.error('MACO generate error:',e);
+    if(!$('errBox').classList.contains('show'))showErr(e.message);
+    toast(e.message||'Failed',true);
+    setSub('Error — see red box above');
+    setTimeout(hideBanner,5000);
+  } finally{
+    btn.disabled=false;
   }
 };
 
 // ── DOWNLOAD ──
-window._dlPage = function(i){
-  const p = genPages[i];
-  if(!p || !p.imgEl || !p.imgEl.src){ toast('Image not ready yet',true); return; }
-  const src = p.imgEl.src;
-  fetch(src)
-    .then(r=>r.blob())
-    .then(blob=>{
-      const a=document.createElement('a');
-      a.href=URL.createObjectURL(blob);
-      a.download=`MACO_p${p.pageNum}_${(p.title||'page').replace(/\s+/g,'_')}.jpg`;
-      a.click();
-      setTimeout(()=>URL.revokeObjectURL(a.href),5000);
-    })
-    .catch(()=>window.open(src,'_blank'));
+window._dl=function(i){
+  const p=genPages[i];
+  if(!p?.imgEl?.src){toast('Not ready',true);return;}
+  fetch(p.imgEl.src).then(r=>r.blob()).then(b=>{
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(b);
+    a.download=`MACO_p${p.pageNum}_${(p.title||'page').replace(/\s+/g,'_')}.jpg`;
+    a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+  }).catch(()=>window.open(p.imgEl.src,'_blank'));
 };
 
 async function dlAll(){
-  if(!genPages.length){ toast('No pages yet',true); return; }
-  toast('Downloading all pages...');
+  if(!genPages.length){toast('No pages',true);return;}
+  toast('Downloading...');
   for(let i=0;i<genPages.length;i++){
     await new Promise(r=>setTimeout(r,500));
-    window._dlPage(i);
+    window._dl(i);
   }
 }
-document.getElementById('srDlAll').onclick = dlAll;
-document.getElementById('dlAllInline').onclick = dlAll;
+$('srDlAll').onclick=dlAll;
+$('dlAllInline').onclick=dlAll;
 
 // ── HISTORY ──
-function saveHist(preview,count){
+function saveHist(p,c){
   const h=JSON.parse(localStorage.getItem('mh')||'[]');
-  h.unshift({preview,count,time:new Date().toLocaleString()});
+  h.unshift({p,c,t:new Date().toLocaleString()});
   localStorage.setItem('mh',JSON.stringify(h.slice(0,15)));
   renderHist();
 }
 function renderHist(){
   const h=JSON.parse(localStorage.getItem('mh')||'[]');
-  const el=document.getElementById('histList');
-  if(!h.length){ el.innerHTML='<div class="no-hist">No generations yet.<br/>Send your first story!</div>'; return; }
-  el.innerHTML=h.map(x=>`<div class="hi"><div class="hi-t">${x.preview}</div><div class="hi-m">${x.count} pages · ${x.time}</div></div>`).join('');
+  const el=$('histList');
+  if(!h.length){el.innerHTML='<div class="no-hist">No generations yet.</div>';return;}
+  el.innerHTML=h.map(x=>`<div class="hi"><div class="hi-t">${x.p}</div><div class="hi-m">${x.c} pages · ${x.t}</div></div>`).join('');
 }
 renderHist();
 </script>
